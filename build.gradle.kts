@@ -1,19 +1,18 @@
 import com.google.protobuf.gradle.id
 
 plugins {
-    java
+    application
     id("com.google.protobuf") version "0.9.4"
 }
 
-repositories {
-    mavenCentral()
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
-dependencies {
-    implementation(platform("io.grpc:grpc-bom:1.62.2"))
-    implementation("io.grpc:grpc-protobuf")
-    implementation("io.grpc:grpc-stub")
-    implementation("jakarta.annotation:jakarta.annotation-api:1.3.5")
+application {
+    mainClass.set("io.github.robertograham.tpp4j.Server")
 }
 
 protobuf {
@@ -32,4 +31,16 @@ protobuf {
             }
         }
     }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation(platform("io.grpc:grpc-bom:1.62.2"))
+    implementation("io.grpc:grpc-protobuf")
+    implementation("io.grpc:grpc-stub")
+    implementation("io.grpc:grpc-netty")
+    implementation("jakarta.annotation:jakarta.annotation-api:1.3.5")
 }
