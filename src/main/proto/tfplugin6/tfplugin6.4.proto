@@ -21,6 +21,8 @@
 //
 syntax = "proto3";
 option go_package = "github.com/hashicorp/terraform/internal/tfplugin6";
+option java_multiple_files = true;
+option java_package = "io.terraform.tfplugin6";
 
 package tfplugin6;
 
