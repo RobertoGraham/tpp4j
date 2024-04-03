@@ -12,7 +12,7 @@ java {
 }
 
 application {
-    mainClass.set("io.github.robertograham.tpp4j.Server")
+    mainClass.set("io.github.robertograham.tpp4j.Application")
 }
 
 protobuf {
@@ -43,4 +43,5 @@ dependencies {
     implementation("io.grpc:grpc-stub")
     implementation("io.grpc:grpc-netty")
     implementation("jakarta.annotation:jakarta.annotation-api:1.3.5")
+    implementation("commons-io:commons-io:2.16.0")
 }
