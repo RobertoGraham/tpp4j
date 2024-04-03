@@ -3,6 +3,7 @@ import com.google.protobuf.gradle.id
 plugins {
     application
     id("com.google.protobuf") version "0.9.4"
+    id("org.graalvm.buildtools.native") version "0.10.1"
 }
 
 java {
@@ -29,6 +30,16 @@ protobuf {
             it.plugins {
                 id("grpc") { }
             }
+        }
+    }
+}
+
+graalvmNative {
+    binaries {
+        named("main") {
+            imageName.set("terraform-provider-test")
+            mainClass.set("io.github.robertograham.tpp4j.Application")
+            resources.autodetect()
         }
     }
 }
