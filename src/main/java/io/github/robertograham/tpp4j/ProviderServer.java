@@ -28,22 +28,21 @@ final class ProviderServer {
                 .orElseThrow();
         final int port = findAvailablePort(minimumPortInclusive, maximumPortInclusive)
                 .orElseThrow();
-        try (final var certificateChain = ClassLoader.getSystemResourceAsStream("certificatechain.pem");
-                final var privateKey = ClassLoader.getSystemResourceAsStream("privatekey.pem")) {
+        final var certificateChain = ClassLoader.getSystemResource("certificatechain.pem");
+        try (final var certificateChainInputStream = certificateChain.openStream();
+                final var privateKeyInputStream = ClassLoader.getSystemResourceAsStream("privatekey.pem")) {
             server = ServerBuilder.forPort(port)
                     .addService(new DefaultProvider())
-                    .useTransportSecurity(certificateChain, privateKey)
+                    .useTransportSecurity(certificateChainInputStream, privateKeyInputStream)
                     .build()
                     .start();
         }
-        try (final var certificateChain = ClassLoader.getSystemResourceAsStream("certificatechain.pem");) {
-            final var base64 = IOUtils.toString(certificateChain, StandardCharsets.UTF_8)
-                    .lines()
-                    .filter(not(isEqual("-----BEGIN CERTIFICATE-----")).and(not(isEqual("-----END CERTIFICATE-----"))))
-                    .collect(Collectors.joining());
-            System.out.printf("%d|%d|tcp|localhost:%d|grpc|%s%n", GO_PLUGIN_PROTOCOL_VERSION, TERRAFORM_PLUGIN_PROTOCOL_VERSION, server.getPort(),
-                    base64);
-        }
+        final var base64 = IOUtils.toString(certificateChain, StandardCharsets.UTF_8)
+                .lines()
+                .filter(not(isEqual("-----BEGIN CERTIFICATE-----")).and(not(isEqual("-----END CERTIFICATE-----"))))
+                .collect(Collectors.joining());
+        System.out.printf("%d|%d|tcp|localhost:%d|grpc|%s%n", GO_PLUGIN_PROTOCOL_VERSION, TERRAFORM_PLUGIN_PROTOCOL_VERSION, server.getPort(),
+                base64);
     }
 
     void awaitTermination() throws InterruptedException {
