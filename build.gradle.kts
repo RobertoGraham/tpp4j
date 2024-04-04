@@ -53,6 +53,6 @@ dependencies {
     implementation("io.grpc:grpc-protobuf")
     implementation("io.grpc:grpc-stub")
     implementation("io.grpc:grpc-netty")
-    implementation("jakarta.annotation:jakarta.annotation-api:1.3.5")
+    implementation("jakarta.annotation:jakarta.annotation-api:2.1.1")
     implementation("commons-io:commons-io:2.16.0")
 }
