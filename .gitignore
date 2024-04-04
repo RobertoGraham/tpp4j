@@ -2,3 +2,6 @@
 .gradle
 build
 *.pem
+terraform/**/**
+!terraform/mutual-tls/main.tf
+!terraform/tpp4j-test/main.tf
