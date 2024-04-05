@@ -3,8 +3,9 @@ package io.github.robertograham.tpp4j;
 import static java.util.function.Predicate.isEqual;
 import static java.util.function.Predicate.not;
 
+import io.grpc.Grpc;
 import io.grpc.Server;
-import io.grpc.ServerBuilder;
+import io.grpc.TlsServerCredentials;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
@@ -28,12 +29,18 @@ final class ProviderServer {
                 .orElseThrow();
         final int port = findAvailablePort(minimumPortInclusive, maximumPortInclusive)
                 .orElseThrow();
+        final var clientCertificate = environmentVariables.get("PLUGIN_CLIENT_CERT")
+                .orElseThrow();
         final var certificateChain = ClassLoader.getSystemResource("certificatechain.pem");
         try (final var certificateChainInputStream = certificateChain.openStream();
-                final var privateKeyInputStream = ClassLoader.getSystemResourceAsStream("privatekey.pem")) {
-            server = ServerBuilder.forPort(port)
+                final var privateKeyInputStream = ClassLoader.getSystemResourceAsStream("privatekey.pem");
+                final var clientCertificateInputStream = IOUtils.toInputStream(clientCertificate, StandardCharsets.UTF_8)) {
+            server = Grpc.newServerBuilderForPort(port, TlsServerCredentials.newBuilder()
+                            .keyManager(certificateChainInputStream, privateKeyInputStream)
+                            .trustManager(clientCertificateInputStream)
+                            .clientAuth(TlsServerCredentials.ClientAuth.REQUIRE)
+                            .build())
                     .addService(new DefaultProvider())
-                    .useTransportSecurity(certificateChainInputStream, privateKeyInputStream)
                     .build()
                     .start();
         }
