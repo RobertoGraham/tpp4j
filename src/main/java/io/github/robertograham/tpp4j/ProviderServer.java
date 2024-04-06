@@ -1,17 +1,19 @@
 package io.github.robertograham.tpp4j;
 
-import static java.util.function.Predicate.isEqual;
-import static java.util.function.Predicate.not;
-
 import io.grpc.Grpc;
 import io.grpc.Server;
 import io.grpc.TlsServerCredentials;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.ServerSocket;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
+import org.bouncycastle.openssl.MiscPEMGenerator;
+import org.bouncycastle.openssl.PKCS8Generator;
+import org.bouncycastle.util.io.pem.PemWriter;
 
 final class ProviderServer {
 
@@ -20,7 +22,7 @@ final class ProviderServer {
 
     private final Server server;
 
-    ProviderServer(final EnvironmentVariables environmentVariables) throws IOException {
+    ProviderServer(final EnvironmentVariables environmentVariables) throws IOException, GeneralSecurityException {
         final int minimumPortInclusive = environmentVariables.get("PLUGIN_MIN_PORT")
                 .map(Integer::parseInt)
                 .orElseThrow();
@@ -31,25 +33,35 @@ final class ProviderServer {
                 .orElseThrow();
         final var clientCertificate = environmentVariables.get("PLUGIN_CLIENT_CERT")
                 .orElseThrow();
-        final var certificateChain = ClassLoader.getSystemResource("certificatechain.pem");
-        try (final var certificateChainInputStream = certificateChain.openStream();
-                final var privateKeyInputStream = ClassLoader.getSystemResourceAsStream("privatekey.pem");
-                final var clientCertificateInputStream = IOUtils.toInputStream(clientCertificate, StandardCharsets.UTF_8)) {
-            server = Grpc.newServerBuilderForPort(port, TlsServerCredentials.newBuilder()
-                            .keyManager(certificateChainInputStream, privateKeyInputStream)
-                            .trustManager(clientCertificateInputStream)
-                            .clientAuth(TlsServerCredentials.ClientAuth.REQUIRE)
-                            .build())
-                    .addService(new DefaultProvider())
-                    .build()
-                    .start();
+        final var privateCredential = PrivateCredentialHelper.generate();
+        try (final var stringWriter = new StringWriter();
+                final var pemWriter = new PemWriter(stringWriter)) {
+            pemWriter.writeObject(new MiscPEMGenerator(privateCredential.certificate()));
+            pemWriter.flush();
+            stringWriter.flush();
+            final var caCertificate = stringWriter.toString();
+            pemWriter.writeObject(new PKCS8Generator(privateCredential.privateKey(), null));
+            pemWriter.flush();
+            stringWriter.flush();
+            final var privateKey = stringWriter.toString();
+            try (final var certificateChainInputStream = IOUtils.toInputStream(caCertificate, StandardCharsets.UTF_8);
+                    final var privateKeyInputStream = IOUtils.toInputStream(privateKey, StandardCharsets.UTF_8);
+                    final var clientCertificateInputStream = IOUtils.toInputStream(clientCertificate, StandardCharsets.UTF_8)) {
+                server = Grpc.newServerBuilderForPort(port, TlsServerCredentials.newBuilder()
+                                .keyManager(certificateChainInputStream, privateKeyInputStream)
+                                .trustManager(clientCertificateInputStream)
+                                .clientAuth(TlsServerCredentials.ClientAuth.REQUIRE)
+                                .build())
+                        .addService(new DefaultProvider())
+                        .build()
+                        .start();
+            }
         }
-        final var base64 = IOUtils.toString(certificateChain, StandardCharsets.UTF_8)
-                .lines()
-                .filter(not(isEqual("-----BEGIN CERTIFICATE-----")).and(not(isEqual("-----END CERTIFICATE-----"))))
-                .collect(Collectors.joining());
         System.out.printf("%d|%d|tcp|localhost:%d|grpc|%s%n", GO_PLUGIN_PROTOCOL_VERSION, TERRAFORM_PLUGIN_PROTOCOL_VERSION, server.getPort(),
-                base64);
+                Base64.getEncoder()
+                        .withoutPadding()
+                        .encodeToString(privateCredential.certificate()
+                                .getEncoded()));
     }
 
     void awaitTermination() throws InterruptedException {

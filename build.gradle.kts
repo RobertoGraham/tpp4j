@@ -39,7 +39,6 @@ graalvmNative {
         named("main") {
             imageName.set("terraform-provider-test")
             mainClass.set("io.github.robertograham.tpp4j.Application")
-            resources.autodetect()
         }
     }
 }
@@ -55,4 +54,5 @@ dependencies {
     implementation("io.grpc:grpc-netty")
     implementation("jakarta.annotation:jakarta.annotation-api:1.3.5")
     implementation("commons-io:commons-io:2.16.0")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.77")
 }

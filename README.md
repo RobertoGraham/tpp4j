@@ -2,14 +2,6 @@
 
 ## Testing
 
-1. Inside the [terraform/mutual-tls](terraform/mutual-tls) directory, create a Terraform plan and
-   execute it.
-
-   ```shell
-   terraform init
-   terraform apply
-   ```
-
 1. Inside the root of this repository, compile the tpp4j native image:
 
    ```shell
