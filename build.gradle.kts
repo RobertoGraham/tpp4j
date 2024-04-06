@@ -28,7 +28,9 @@ protobuf {
     generateProtoTasks {
         ofSourceSet("main").forEach {
             it.plugins {
-                id("grpc") { }
+                id("grpc") {
+                    option("jakarta_omit")
+                }
             }
         }
     }
@@ -52,7 +54,6 @@ dependencies {
     implementation("io.grpc:grpc-protobuf")
     implementation("io.grpc:grpc-stub")
     implementation("io.grpc:grpc-netty")
-    implementation("jakarta.annotation:jakarta.annotation-api:1.3.5")
     implementation("commons-io:commons-io:2.16.0")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.77")
 }
