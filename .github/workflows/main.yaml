@@ -1,0 +1,27 @@
+name: Compile and Upload Native Binaries
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  publish:
+    strategy:
+      matrix:
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: 21
+          distribution: liberica
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: true
+      - uses: gradle/wrapper-validation-action@v2
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew nativeCompile
+      - uses: actions/upload-artifact@v4
+        with:
+          name: terraform-provider-test-${{ matrix.os }}
+          path: build/native/nativeCompile/terraform-provider-test
