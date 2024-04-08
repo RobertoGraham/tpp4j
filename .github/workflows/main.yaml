@@ -32,7 +32,7 @@ jobs:
         with:
           terraform_version: "1.7.5"
       - run: terraform plan
-        working-directory: terraform/tpp4j-test
+        working-directory: terraform${{ runner.os == 'Windows' && '\' || '/' }}tpp4j-test
         env:
           TF_LOG: trace
       - uses: actions/upload-artifact@v4
