@@ -21,7 +21,7 @@ jobs:
       - uses: gradle/wrapper-validation-action@v2
       - uses: gradle/actions/setup-gradle@v3
       - run: ./gradlew nativeCompile
-      - run: printf "TF_CLI_CONFIG_FILE=${{ github.workspace }}/terraform.tfrc" >> "$GITHUB_ENV"
+      - run: printf "TF_CLI_CONFIG_FILE=%s" "${{ github.workspace }}${{ runner.os == 'Windows' && '\' || '/' }}terraform.tfrc" >> "$GITHUB_ENV"
         shell: bash
       - run: >-
           touch "$TF_CLI_CONFIG_FILE"
