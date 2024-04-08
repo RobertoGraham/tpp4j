@@ -23,5 +23,5 @@ jobs:
       - run: ./gradlew nativeCompile
       - uses: actions/upload-artifact@v4
         with:
-          name: terraform-provider-test-${{ matrix.os }}
-          path: build/native/nativeCompile/terraform-provider-test
+          name: terraform-provider-test_${{ matrix.os }}
+          path: build/native/nativeCompile/terraform-provider-test*
