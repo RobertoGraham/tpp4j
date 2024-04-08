@@ -10,6 +10,9 @@ jobs:
       matrix:
         os: [ macos-latest, windows-latest, ubuntu-latest ]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
@@ -21,18 +24,15 @@ jobs:
       - uses: gradle/wrapper-validation-action@v2
       - uses: gradle/actions/setup-gradle@v3
       - run: ./gradlew nativeCompile
-      - run: printf "TF_CLI_CONFIG_FILE=%s" "${{ github.workspace }}${{ runner.os == 'Windows' && '\' || '/' }}terraform.tfrc" >> "$GITHUB_ENV"
-        shell: bash
+      - run: printf "TF_CLI_CONFIG_FILE=%s" "${{ runner.temp }}${{ runner.os == 'Windows' && '\' || '/' }}cli.tfrc" >> "$GITHUB_ENV"
       - run: >-
           touch "$TF_CLI_CONFIG_FILE"
           &&
           printf 'provider_installation{dev_overrides{"robertograham.github.io/tpp4j/test"="%s/build/native/nativeCompile"}\ndirect{}}' "$GITHUB_WORKSPACE" >> "$TF_CLI_CONFIG_FILE"
-        shell: bash
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.7.5"
       - run: terraform plan
-        shell: bash
         working-directory: terraform/tpp4j-test
         env:
           TF_LOG: trace
