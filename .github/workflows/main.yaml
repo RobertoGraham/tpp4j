@@ -28,7 +28,7 @@ jobs:
       - run: >-
           touch "$TF_CLI_CONFIG_FILE"
           &&
-          printf 'provider_installation{dev_overrides{"robertograham.github.io/tpp4j/test"="%s"}${{ runner.os == 'Windows' && '\r\n' || '\n' }}direct{}}' "${{ github.workspace }}${{ runner.os == 'Windows' && '\' || '/' }}build${{ runner.os == 'Windows' && '\' || '/' }}native${{ runner.os == 'Windows' && '\' || '/' }}nativeCompile" >> "$TF_CLI_CONFIG_FILE"
+          printf 'provider_installation{dev_overrides{"robertograham.github.io/tpp4j/test"="%s"}${{ runner.os == 'Windows' && '\r\n' || '\n' }}direct{}}' "${{ github.workspace }}${{ runner.os == 'Windows' && '\' || '/' }}build${{ runner.os == 'Windows' && '\' || '/' }}native${{ runner.os == 'Windows' && '\' || '/' }}nativeCompile" | sed 's~\\~\\\\~g' >> "$TF_CLI_CONFIG_FILE"
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.7.5"
