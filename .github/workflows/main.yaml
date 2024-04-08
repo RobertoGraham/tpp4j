@@ -10,8 +10,6 @@ jobs:
       matrix:
         os: [ macos-latest, windows-latest, ubuntu-latest ]
     runs-on: ${{ matrix.os }}
-    env:
-      TF_CLI_CONFIG_FILE: ${{ vars.GITHUB_WORKSPACE }}/terraform.tfrc
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
@@ -23,6 +21,8 @@ jobs:
       - uses: gradle/wrapper-validation-action@v2
       - uses: gradle/actions/setup-gradle@v3
       - run: ./gradlew nativeCompile
+      - run: printf "TF_CLI_CONFIG_FILE=${{ github.workspace }}/terraform.tfrc" >> "$GITHUB_ENV"
+        shell: bash
       - run: >-
           touch "$TF_CLI_CONFIG_FILE"
           &&
