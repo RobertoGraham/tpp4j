@@ -11,7 +11,7 @@ jobs:
         os: [ macos-latest, windows-latest, ubuntu-latest ]
     runs-on: ${{ matrix.os }}
     env:
-      TF_CLI_CONFIG_FILE: ${{ env.GITHUB_WORKSPACE }}/terraform.tfrc
+      TF_CLI_CONFIG_FILE: ${{ vars.GITHUB_WORKSPACE }}/terraform.tfrc
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
@@ -32,6 +32,7 @@ jobs:
         with:
           terraform_version: "1.7.5"
       - run: terraform plan
+        working-directory: terraform/tpp4j-test
         env:
           TF_LOG: trace
       - uses: actions/upload-artifact@v4
