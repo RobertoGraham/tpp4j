@@ -54,6 +54,6 @@ dependencies {
     implementation("io.grpc:grpc-protobuf")
     implementation("io.grpc:grpc-stub")
     implementation("io.grpc:grpc-netty")
-    implementation("commons-io:commons-io:2.16.0")
+    implementation("commons-io:commons-io:2.16.1")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.78")
 }
