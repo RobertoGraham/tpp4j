@@ -1,7 +1,9 @@
 package io.github.robertograham.tpp4j;
 
+import io.grpc.Attributes;
 import io.grpc.Grpc;
 import io.grpc.Server;
+import io.grpc.ServerTransportFilter;
 import io.grpc.TlsServerCredentials;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -20,9 +22,14 @@ final class ProviderServer {
     private static final int GO_PLUGIN_PROTOCOL_VERSION = 1;
     private static final int TERRAFORM_PLUGIN_PROTOCOL_VERSION = 6;
 
-    private final Server server;
+    private final EnvironmentVariables environmentVariables;
+    private Server server;
 
-    ProviderServer(final EnvironmentVariables environmentVariables) throws IOException, GeneralSecurityException {
+    ProviderServer(final EnvironmentVariables environmentVariables) {
+        this.environmentVariables = environmentVariables;
+    }
+
+    void start() throws IOException, GeneralSecurityException {
         final int minimumPortInclusive = environmentVariables.get("PLUGIN_MIN_PORT")
                 .map(Integer::parseInt)
                 .orElseThrow();
@@ -53,6 +60,12 @@ final class ProviderServer {
                                 .clientAuth(TlsServerCredentials.ClientAuth.REQUIRE)
                                 .build())
                         .addService(new DefaultProvider())
+                        .addTransportFilter(new ServerTransportFilter() {
+                            @Override
+                            public void transportTerminated(final Attributes attributes) {
+                                stop();
+                            }
+                        })
                         .build()
                         .start();
             }
@@ -64,8 +77,17 @@ final class ProviderServer {
                                 .getEncoded()));
     }
 
-    void awaitTermination() throws InterruptedException {
-        server.awaitTermination();
+    void blockUntilShutdown() throws InterruptedException {
+        if (server != null) {
+            server.awaitTermination();
+        }
+    }
+
+    private void stop() {
+        if (server != null) {
+            System.err.println("[INFO] Shutting down provider server");
+            server.shutdown();
+        }
     }
 
     private Optional<Integer> findAvailablePort(final int minimumPortInclusive, final int maximumPortInclusive) {

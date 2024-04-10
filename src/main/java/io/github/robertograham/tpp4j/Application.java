@@ -6,7 +6,8 @@ import java.security.GeneralSecurityException;
 public final class Application {
 
     public static void main(final String[] args) throws IOException, InterruptedException, GeneralSecurityException {
-        new ProviderServer(new SystemEnvironmentVariables())
-                .awaitTermination();
+        final var providerServer = new ProviderServer(new SystemEnvironmentVariables());
+        providerServer.start();
+        providerServer.blockUntilShutdown();
     }
 }
