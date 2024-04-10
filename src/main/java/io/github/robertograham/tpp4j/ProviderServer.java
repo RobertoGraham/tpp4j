@@ -1,9 +1,7 @@
 package io.github.robertograham.tpp4j;
 
-import io.grpc.Attributes;
 import io.grpc.Grpc;
 import io.grpc.Server;
-import io.grpc.ServerTransportFilter;
 import io.grpc.TlsServerCredentials;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -60,12 +58,7 @@ final class ProviderServer {
                                 .clientAuth(TlsServerCredentials.ClientAuth.REQUIRE)
                                 .build())
                         .addService(new DefaultProvider())
-                        .addTransportFilter(new ServerTransportFilter() {
-                            @Override
-                            public void transportTerminated(final Attributes attributes) {
-                                stop();
-                            }
-                        })
+                        .addService(new DefaultGrpcController(this))
                         .build()
                         .start();
             }
@@ -83,9 +76,8 @@ final class ProviderServer {
         }
     }
 
-    private void stop() {
+    void stop() {
         if (server != null) {
-            System.err.println("[INFO] Shutting down provider server");
             server.shutdown();
         }
     }
