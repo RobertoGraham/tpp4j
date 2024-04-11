@@ -56,4 +56,15 @@ dependencies {
     implementation("io.grpc:grpc-netty")
     implementation("commons-io:commons-io:2.16.1")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.78")
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.11.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
 }

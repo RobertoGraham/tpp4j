@@ -23,6 +23,7 @@ jobs:
           native-image-job-reports: true
       - uses: gradle/wrapper-validation-action@v2
       - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew test
       - run: ./gradlew nativeCompile
       - run: printf "TF_CLI_CONFIG_FILE=%s" "${{ github.workspace }}${{ runner.os == 'Windows' && '\' || '/' }}terraform.tfrc" >> "$GITHUB_ENV"
       - run: >-
