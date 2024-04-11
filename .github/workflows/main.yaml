@@ -3,6 +3,14 @@ name: Compile and Upload Native Binaries
 on:
   push:
     branches: [ main ]
+    paths:
+      - .github/workflows/main.yaml
+      - gradle/**
+      - src/**
+      - terraform/**
+      - gradlew
+      - build.gradle.kts
+      - setting.gradle.kts
 
 jobs:
   publish:
