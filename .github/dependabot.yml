@@ -8,3 +8,11 @@ updates:
       timezone: "Europe/London"
     reviewers:
       - "RobertoGraham"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "09:00"
+      timezone: "Europe/London"
+    reviewers:
+      - "RobertoGraham"
