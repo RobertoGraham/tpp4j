@@ -8,11 +8,3 @@ updates:
       timezone: "Europe/London"
     reviewers:
       - "RobertoGraham"
-  - package-ecosystem: "terraform"
-    directory: "/terraform/mutual-tls"
-    schedule:
-      interval: "daily"
-      time: "09:00"
-      timezone: "Europe/London"
-    reviewers:
-      - "RobertoGraham"
