@@ -2,7 +2,9 @@ package io.github.robertograham.tpp4j;
 
 import java.util.Optional;
 
-final class SystemEnvironmentVariables implements EnvironmentVariables {
+enum SystemEnvironmentVariables implements EnvironmentVariables {
+
+    INSTANCE;
 
     @Override
     public Optional<String> get(final String name) {

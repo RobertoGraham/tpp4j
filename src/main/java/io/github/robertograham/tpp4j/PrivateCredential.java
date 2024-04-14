@@ -1,8 +1,14 @@
 package io.github.robertograham.tpp4j;
 
-import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
-import org.bouncycastle.cert.X509CertificateHolder;
+interface PrivateCredential {
 
-record PrivateCredential(X509CertificateHolder certificate, PrivateKeyInfo privateKey) {
+    static PrivateCredential newPrivateCredential() {
+        return new BouncyCastlePrivateCredential();
+    }
 
+    String rfc7468EncodedX509Certificate();
+
+    String rfc7468EncodedPkcs8PrivateKeyInfo();
+
+    String base64EncodedX509CertificateWithoutPadding();
 }

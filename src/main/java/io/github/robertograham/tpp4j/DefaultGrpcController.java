@@ -6,17 +6,17 @@ import io.grpc.stub.StreamObserver;
 
 final class DefaultGrpcController extends GRPCControllerImplBase {
 
-    final ProviderServer providerServer;
+    private final Runnable serverShutdown;
 
-    DefaultGrpcController(final ProviderServer providerServer) {
-        this.providerServer = providerServer;
+    DefaultGrpcController(final Runnable serverShutdown) {
+        this.serverShutdown = serverShutdown;
     }
 
     @Override
     public void shutdown(final Empty request, final StreamObserver<Empty> responseObserver) {
         System.err.println("[INFO] Shutting down");
 
-        providerServer.stop();
+        serverShutdown.run();
 
         responseObserver.onNext(Empty.newBuilder()
                 .build());
