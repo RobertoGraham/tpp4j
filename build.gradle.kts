@@ -40,7 +40,6 @@ graalvmNative {
     binaries {
         named("main") {
             imageName.set("terraform-provider-test")
-            mainClass.set("io.github.robertograham.tpp4j.Application")
         }
     }
 }
