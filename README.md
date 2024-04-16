@@ -20,9 +20,17 @@
    }
    ```
 
-1. Inside the [terraform/tpp4j-test](terraform/tpp4j-test) directory, create a Terraform execution
+1. Inside the [infrastructure/tpp4j-test](infrastructure/tpp4j-test) directory, create an execution
    plan:
+
+   #### Terraform
 
    ```shell
    TF_LOG=trace terraform plan
+   ```
+
+   #### OpenTofu
+
+   ```shell
+   TF_LOG=trace tofu plan
    ```

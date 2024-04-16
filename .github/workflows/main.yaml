@@ -45,6 +45,13 @@ jobs:
         working-directory: terraform/tpp4j-test
         env:
           TF_LOG: trace
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: "1.6.2"
+      - run: tofu plan
+        working-directory: terraform/tpp4j-test
+        env:
+          TF_LOG: trace
       - uses: actions/upload-artifact@v4
         with:
           name: terraform-provider-test_${{ matrix.os }}

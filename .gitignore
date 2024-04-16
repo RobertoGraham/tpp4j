@@ -1,5 +1,5 @@
 .idea
 .gradle
 build
-terraform/**/**
-!terraform/tpp4j-test/main.tf
+infrastructure/**/**
+!infrastructure/tpp4j-test/main.tf
