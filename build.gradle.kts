@@ -49,7 +49,7 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("io.grpc:grpc-bom:1.63.0"))
+    implementation(platform("io.grpc:grpc-bom:1.64.0"))
     implementation("io.grpc:grpc-protobuf")
     implementation("io.grpc:grpc-stub")
     implementation("io.grpc:grpc-netty")
