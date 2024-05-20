@@ -3,7 +3,7 @@ import com.google.protobuf.gradle.id
 plugins {
     application
     id("com.google.protobuf") version "0.9.4"
-    id("org.graalvm.buildtools.native") version "0.10.1"
+    id("org.graalvm.buildtools.native") version "0.10.2"
 }
 
 java {
