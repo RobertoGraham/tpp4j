@@ -29,8 +29,8 @@ jobs:
           distribution: liberica
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: true
-      - uses: gradle/actions/wrapper-validation@v3
-      - uses: gradle/actions/setup-gradle@v3
+      - uses: gradle/actions/wrapper-validation@v4
+      - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew test
       - run: ./gradlew nativeCompile
       - run: printf "TF_CLI_CONFIG_FILE=%s" "${{ github.workspace }}${{ runner.os == 'Windows' && '\' || '/' }}terraform.tfrc" >> "$GITHUB_ENV"
